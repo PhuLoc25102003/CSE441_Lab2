@@ -1,118 +1,104 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState } from 'react';
+import { View, Text} from 'react-native';
+import styles from './style';
+import CalculatorButton from './CalculatorButton';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+const App = () => {
+  const [currentValue, setCurrentValue] = useState('0');
+  const [previousValue, setPreviousValue] = useState(null);
+  const [operator, setOperator] = useState(null);
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  // Handle button press for numbers
+  const handlePress = (value) => {
+    if (currentValue === '0') {
+      setCurrentValue(value);
+    } else {
+      setCurrentValue(currentValue + value);
+    }
+  };
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  // Handle operator press
+  const handleOperatorPress = (value) => {
+    setOperator(value);
+    setPreviousValue(currentValue);
+    setCurrentValue('0');
+  };
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+  // Handle the equals press
+  const handleEqualPress = () => {
+    const prev = parseFloat(previousValue);
+    const current = parseFloat(currentValue);
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+    if (operator === '+') {
+      setCurrentValue((prev + current).toString());
+    } else if (operator === '-') {
+      setCurrentValue((prev - current).toString());
+    } else if (operator === '*') {
+      setCurrentValue((prev * current).toString());
+    } else if (operator === '/') {
+      setCurrentValue((prev / current).toString());
+    }
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+    setOperator(null);
+    setPreviousValue(null);
+  };
+
+  // Clear the display
+  const handleClear = () => {
+    setCurrentValue('0');
+    setPreviousValue(null);
+    setOperator(null);
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
+    <View style={styles.container}>
+      {/* Display */}
+      <View style={styles.display}>
+        <Text style={styles.displayText}>{currentValue}</Text>
+      </View>
 
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+      {/* Buttons */}
+      <View style={styles.buttonContainer}>
+        {/* Row 1 */}
+        <View style={styles.row}>
+          <CalculatorButton title="7" onPress={() => handlePress('7')} />
+          <CalculatorButton title="8" onPress={() => handlePress('8')} />
+          <CalculatorButton title="9" onPress={() => handlePress('9')} />
+          <CalculatorButton title="÷" onPress={() => handleOperatorPress('/')} style={styles.operator}/>
+        </View>
+
+        {/* Row 2 */}
+        <View style={styles.row}>
+          <CalculatorButton title="4" onPress={() => handlePress('4')} />
+          <CalculatorButton title="5" onPress={() => handlePress('5')} />
+          <CalculatorButton title="6" onPress={() => handlePress('6')} />
+          <CalculatorButton title="×" onPress={() => handleOperatorPress('*')} style={styles.operator}/>
+        </View>
+
+        {/* Row 3 */}
+        <View style={styles.row}>
+          <CalculatorButton title="1" onPress={() => handlePress('1')} />
+          <CalculatorButton title="2" onPress={() => handlePress('2')} />
+          <CalculatorButton title="3" onPress={() => handlePress('3')} />
+          <CalculatorButton title="−" onPress={() => handleOperatorPress('-')} style={styles.operator} />
+        </View>
+
+        {/* Row 4 */}
+        <View style={styles.row}>
+          <CalculatorButton title="0" onPress={() => handlePress('0')} style={{ flex: 2 }} />
+          <CalculatorButton title="+" onPress={() => handleOperatorPress('+')} style={styles.operator} />
+          <CalculatorButton title="=" onPress={handleEqualPress} style={styles.equalButton}/>
+        </View>
+
+        {/* Row 5 */}
+        <View style={styles.row}>
+          <CalculatorButton title="C" onPress={handleClear}  />
+        </View>
+      </View>
+    </View>
+  );
+};
 
 export default App;
+ 
+
